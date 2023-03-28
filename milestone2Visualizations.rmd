@@ -1,0 +1,321 @@
+
+
+#libraries
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(GGally)
+library(patchwork)
+
+```
+
+
+#importing file
+```{r}
+df_diabetes= read_csv("diabetes.csv")
+```
+
+
+
+
+#loading dataset
+
+```{r}
+head(df_diabetes)
+```
+
+# making correlogram
+
+```{r}
+p <- ggpairs(df_diabetes, title="correlogram )") 
+p
+```
+
+
+
+```{r}
+
+p <- ggpairs(df_diabetes, columns = 2:4, ggplot2::aes(colour=Outcome)) 
+ggplotly(p)
+```
+
+# cleaning up dataset
+
+# removing rows that have a zero for BMI, blood pressure, glucose
+
+```{r}
+df <- df_diabetes %>%
+  filter(BMI!=0,Glucose!=0,BloodPressure!=0,Insulin!=0) %>%
+  mutate(
+    Outcome=as.factor(Outcome)
+  ) %>%
+  mutate (
+    age_bracket = cut(
+    Age,
+    breaks = c(20, 30, 40,50,60,70,80,90,100), # 8 divisions
+    labels = c("20-30", "30-40", "40-50", "50-60","60-70","70-80","80-90","90-100"),
+    right  = FALSE
+)
+  ) %>%
+  select(-Age)
+  
+# remove later
+
+df
+```
+
+
+```{r}
+p <- ggpairs(df2, ggplot2::aes(colour=Outcome)) 
+#p <- ggpairs(df2)
+p
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#########################
+
+
+```{r}
+library(ggplot2)
+library(ggalt)
+library(ggfortify)
+theme_set(theme_classic())
+
+# Compute data with principal components ------------------
+df <- iris[c(1, 2, 3, 4)]
+pca_mod <- prcomp(df)  # compute principal components
+
+# Data frame of principal components ----------------------
+df_pc <- data.frame(pca_mod$x, Species=iris$Species)  # dataframe of principal components
+df_pc_vir <- df_pc[df_pc$Species == "virginica", ]  # df for 'virginica'
+df_pc_set <- df_pc[df_pc$Species == "setosa", ]  # df for 'setosa'
+df_pc_ver <- df_pc[df_pc$Species == "versicolor", ]  # df for 'versicolor'
+ 
+# Plot ----------------------------------------------------
+ggplot(df_pc, aes(PC1, PC2, col=Species)) + 
+  geom_point(aes(shape=Species), size=2) +   # draw points
+  labs(title="Iris Clustering", 
+       subtitle="With principal components PC1 and PC2 as X and Y axis",
+       caption="Source: Iris") + 
+  coord_cartesian(xlim = 1.2 * c(min(df_pc$PC1), max(df_pc$PC1)), 
+                  ylim = 1.2 * c(min(df_pc$PC2), max(df_pc$PC2))) +   # change axis limits
+  geom_encircle(data = df_pc_vir, aes(x=PC1, y=PC2)) +   # draw circles
+  geom_encircle(data = df_pc_set, aes(x=PC1, y=PC2)) + 
+  geom_encircle(data = df_pc_ver, aes(x=PC1, y=PC2))
+```
+
+```{r}
+iris[c("Sepal.Length", "Sepal.Width")]
+```
+
+
+```{r}
+library(ggplot2)
+library(ggalt)
+library(ggfortify)
+theme_set(theme_classic())
+
+# Compute data with principal components ------------------
+df <- iris[c(1, 2, 3, 4)]
+pca_mod <- prcomp(df)  # compute principal components
+
+# Data frame of principal components ----------------------
+df_pc <- data.frame(pca_mod$x, Species=iris$Species)  # dataframe of principal components
+df_pc_vir <- df_pc[df_pc$Species == "virginica", ]  # df for 'virginica'
+df_pc_set <- df_pc[df_pc$Species == "setosa", ]  # df for 'setosa'
+df_pc_ver <- df_pc[df_pc$Species == "versicolor", ]  # df for 'versicolor'
+ 
+# Plot ----------------------------------------------------
+ggplot(df_pc, aes(PC1, PC2, col=Species)) + 
+  geom_point(aes(shape=Species), size=2) +   # draw points
+  labs(title="Iris Clustering", 
+       subtitle="With principal components PC1 and PC2 as X and Y axis",
+       caption="Source: Iris") + 
+  coord_cartesian(xlim = 1.2 * c(min(df_pc$PC1), max(df_pc$PC1)), 
+                  ylim = 1.2 * c(min(df_pc$PC2), max(df_pc$PC2))) +   # change axis limits
+  geom_encircle(data = df_pc_vir, aes(x=PC1, y=PC2)) +   # draw circles
+  geom_encircle(data = df_pc_set, aes(x=PC1, y=PC2)) + 
+  geom_encircle(data = df_pc_ver, aes(x=PC1, y=PC2))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+iris_colors <- c('red', 'blue', 'green')[unclass(iris$Species)];
+pairs(iris[,1:4], col=iris_colors);
+```
+
+
+
+
+```{r}
+data <- data.frame( var1 = 1:100 + rnorm(100,sd=20), v2 = 1:100 + rnorm(100,sd=27), v3 = rep(1, 100) + rnorm(100, sd = 1)) 
+data$v4 = data$var1 ** 2 
+data$v5 = -(data$var1 ** 2) 
+
+
+data
+```
+
+
+
+```{r}
+p <- ggpairs(data, title="correlogram with ggpairs()") 
+
+ggplotly(p)
+```
+
+
+
+```{r}
+data <- data.frame( var1 = 1:100 + rnorm(100,sd=20), v2 = 1:100 + rnorm(100,sd=27), v3 = rep(1, 100) + rnorm(100, sd = 1)) 
+data$v4 = data$var1 ** 2 
+data$v5 = -(data$var1 ** 2) 
+
+p <- ggcorr(data, method = c("everything", "pearson")) 
+
+p
+```
+
+```{r}
+p <- ggpairs(flea, columns = 2:4, ggplot2::aes(colour=species)) 
+
+ggplotly(p)
+```
+
+
+-
+```{r}
+df2 <- df %>%
+  select(SkinThickness,Insulin,BMI,Outcome,age_bracket)
+
+view(df2)
+```
+
+
+
+```{r}
+p <- ggpairs(df2,columns = 1:3,ggplot2::aes(colour=Outcome),
+             upper = list(continuous = "density", combo = "box_no_facet"),
+      lower = list(continuous = "points", combo = "dot_no_facet")
+             ) 
+
+ggplotly(p)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+Stacked bar graph,Diabetic vs NonDiaebtic, colored by Age Graph
+
+
+ggplot(data, aes(fill=condition, y=value, x=specie)) + 
+    geom_bar(position="dodge", stat="identity")
+
+
+
+```{r}
+ggplot(data = df) + 
+  geom_bar(mapping = aes(x = Outcome,fill=age_bracket),position = "dodge") +
+   scale_y_continuous(expand = c(0, 0)) +
+   scale_fill_brewer(palette = "Set1") +
+   labs(x=c("Diabetes Status"),y = "Number of Women", title="Diabetes Status by Age")+
+   scale_x_discrete(labels=c('Non_Diabetic', 'Diabetic')) +
+  theme(legend.background = element_rect(fill = "lightblue", # Background
+                                         colour = 1))  
+
+  
+  
+```
+
+
+
+
+blood pressure vs BMI
+
+```{r}
+ggplot(df, aes(x=BloodPressure,y=BMI)) +
+  geom_point(aes(color=Outcome)) +
+   geom_smooth(method=lm, se=FALSE) +
+   scale_color_brewer(palette = "Set1") +
+  labs(title="Blood Pressure Vs BMI") +
+  theme(legend.background = element_rect(fill = "lightblue", # Background
+                                         colour = 1)) 
+  
+  
+```
+
+
+
+
+# patch work
+
+```{r}
+ patchwork <- list()
+p[["bar"]] <- ggplot(data = df) + 
+  geom_bar(mapping = aes(x = Outcome,fill=age_bracket),position = "dodge") +
+   scale_y_continuous(expand = c(0, 0)) +
+   scale_fill_brewer(palette = "Set1") +
+   labs(x=c("Diabetes Status"),y = "Number of Women", title="Diabetes Status by Age")+
+   scale_x_discrete(labels=c('Non_Diabetic', 'Diabetic')) +
+  theme(legend.background = element_rect(fill = "lightblue", # Background
+                                         colour = 1))  
+p[["scatter_line"]] <- ggplot(df, aes(x=BloodPressure,y=BMI)) +
+  geom_point(aes(color=Outcome)) +
+   geom_smooth(method=lm, se=FALSE) +
+   scale_color_brewer(palette = "Set1") +
+  labs(title="Blood Pressure Vs BMI") +
+  theme(legend.background = element_rect(fill = "lightblue", # Background
+                                         colour = 1)) 
+
+
+p[["bar"]] / p[["scatter_line"]] 
+```
+
+
+
+
+
+
+
+
+
+
+
+
